@@ -1,16 +1,16 @@
 var React = require('react');
 var ContEl = require('./ContEl');
 var RaisedButton = require('material-ui/RaisedButton').default;
-var Divider = require('material-ui/Divider').default;
 var FlatButton = require('material-ui/FlatButton').default;
 var Dialog = require('material-ui/Dialog').default;
 
+var unicKey = "TOpwJkKLwV";
+
 var Contact = React.createClass({
-	getInitialState: function () {	
-		return {
-			name: this.props.itemKey,
-			deleted: false,
-			open: false
+	getInitialState: function () {
+		return { 
+		deleted: false,
+		open: false
 		};
 	},
 	
@@ -21,9 +21,10 @@ var Contact = React.createClass({
 	handleClose: function () {
 		this.setState({open: false});
 	  },
-	
+	  
 	delCont: function(){
-		localStorage.removeItem(this.state.name);
+		var tmp = localStorage.getItem(unicKey);
+		localStorage.setItem(unicKey, tmp.replace(this.props.item + '%', ''));
 		this.setState({ deleted: true, open: false });
 	},
 	
@@ -41,19 +42,15 @@ var Contact = React.createClass({
 		 />,
 		];
 		
-		var key =  this.props.itemKey;
-		console.log("this.props.itemKey = " + key);
 		
-		var returnObj = JSON.parse(localStorage.getItem(key));
-		//console.log("name = " + returnObj.name);
+		var returnObj = JSON.parse(this.props.item);
 		if(!this.state.deleted){
-			//console.log("name = " + returnObj.name);
 			return (
 				<div style = {{ margin: 'auto', width: 500}}>
-					<ContEl text = {returnObj.name} stKey = {key} objType = 'name' />
-					<ContEl text = {returnObj.phone} stKey = {key} objType = 'phone' />
-					<ContEl text = {returnObj.email} stKey = {key} objType = 'email' />
-					<ContEl text = {returnObj.address} stKey = {key} objType = 'address' />
+					<ContEl text = {returnObj.name} objType = 'name' itemId = {returnObj.id}/>
+					<ContEl text = {returnObj.phone} objType = 'phone' itemId = {returnObj.id}/>
+					<ContEl text = {returnObj.email} objType = 'email' itemId = {returnObj.id}/>
+					<ContEl text = {returnObj.address} objType = 'address' itemId = {returnObj.id}/>
 					<RaisedButton label="Delete" onTouchTap={this.handleOpen} secondary={true}/>
 					<Dialog
 					  actions={actions}
