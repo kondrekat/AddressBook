@@ -2,32 +2,54 @@ var React = require('react');
 var RaisedButton = require('material-ui/RaisedButton').default;
 var TextField = require ('material-ui/TextField').default;
 
+var unicKey = "TOpwJkKLwV";
+var min = 0;
+var max = 100000;
+
 var EmptyForm = React.createClass({
 	addContact: function(){
-		var obj = {
-		name: document.getElementById('name').value,
-		phone: document.getElementById('phone').value,
-		email: document.getElementById('email').value,
-		address: document.getElementById('address').value,
-		timeOfAdd: localStorage.length
+		var newName = document.getElementById('name').value;
+		if(!newName.match(/^[a-z0-9\s]+$/i)) alert('Name not OK');
+		else{
+			var newPhone = document.getElementById('phone').value;
+			if(!newPhone.match(/^\+?[0-9\-]+$/)) alert('Phone not OK');
+			else{
+				var newEmail = document.getElementById('email').value;
+				if(!newEmail.match(/@/)) alert('Email not OK');
+				else{
+					var newAddress = document.getElementById('address').value;
+					if(!newAddress.match(/^[a-z0-9\s]*/i)) alert('Address not OK');
+					else{
+						var obj = {
+							id: Math.floor(Math.random() * (max - min + 1)) + min, //id is random number between min and max
+							name: newName,
+							phone: newPhone,
+							email: newEmail,
+							address: newAddress
+						}
+			
+						var serialObj = JSON.stringify(obj); //serialazed it
+						var tmp = localStorage.getItem(unicKey);
+						tmp = serialObj + "%" + tmp;
+			
+						try {
+						  localStorage.setItem(unicKey, tmp);
+						} 
+						
+						catch (e) {
+						  if (e == QUOTA_EXCEEDED_ERR) {
+						   alert('РџСЂРµРІС‹С€РµРЅ Р»РёРјРёС‚');
+						  }
+						}
+						this.props.closeForm();
+					}
+				}
+			}
 		}
-		
-		var serialObj = JSON.stringify(obj); //сериализуем его
-		
-		try {
-		  localStorage.setItem(obj.name, serialObj); 
-		} catch (e) {
-		  if (e == QUOTA_EXCEEDED_ERR) {
-		   alert('Превышен лимит');
-		  }
-		}
-		
-		
-		this.props.closeForm();
 	}, 
 	
 	closeForm: function(){
-		this.props.closeForm();
+		this.props.closeForm();//!!! РњРѕР¶РЅРѕ Р»Рё СЌС‚Рѕ СѓР±СЂР°С‚СЊ???
 	},
 	
 	render: function(){
