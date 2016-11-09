@@ -4,14 +4,21 @@ var Contact = require('./ContactConf');
 var EmptyForm = require('./EmptyForm');
 var Search = require('./Search');
 
+var unicKey = "TOpwJkKLwV";
+
 var AddressBook = React.createClass({
 	getInitialState: function () {
 		return { 
 		needEmptyForm: false,
-		removeElem: false,
+		//removeElem: false,
 		searchState: false,
-		searchRes: '' //строка ключей, удовлетвор€ющих поиску, разделЄнных ","
+		searchRes: '' //string if ids as result of search. Split by "%"
 		};
+	},
+	
+	componentWillMount: function(){
+		if(localStorage.getItem(unicKey) === null) 
+			localStorage.setItem(unicKey, '');
 	},
 	
 	openEmptyForm: function(){
@@ -25,24 +32,30 @@ var AddressBook = React.createClass({
 	showRes: function(res, searchNeeded){
 		this.setState({ searchRes: res, searchState: searchNeeded });
 	},
-	
+				
 	render: function(){
 		
 		var ContactList = [];
 		if(!this.state.searchState){
-			for(var i = 0; i < localStorage.length; i++){
-				var itKey = localStorage.key(i);
-				ContactList.push(<Contact itemKey = {itKey} />);
+			var contacts = localStorage.getItem(unicKey).split("%");
+			for(var i = 0; i < contacts.length; i++){
+				if(contacts[i] != ""){
+					ContactList.push(<Contact item = {contacts[i]} />);
+				}
 			}
 		}
 		else{
-			var tmp = this.state.searchRes.substring(0, this.state.searchRes.length - 1);
-			var res = tmp.split(',');
-			console.log("tmp = ", tmp);
+			var tmp = this.state.searchRes.substring(0, this.state.searchRes.length-1);//remove last "%"
+			var res = tmp.split('%');
+			
+			var contacts = localStorage.getItem(unicKey).split("%"); //Get all contacts as array
 			for(var i = 0; i < res.length; i++){
 				if(res[i] != ''){
-					console.log("itkey = " + res[i]);
-					ContactList.push(<Contact itemKey = {res[i]} />);
+					for(var j = 0; j < contacts.length; j++){
+						if(contacts[j].indexOf(res[i]) != -1){
+							ContactList.push(<Contact item = {contacts[j]} />);
+						}
+					}		
 				}
 			}
 		}
